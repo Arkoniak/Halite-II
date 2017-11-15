@@ -1,6 +1,19 @@
+function request_commands(game::Game)
+    new_map = readline()
+    write(game.sock, new_map*"\n")
+    flush(game.sock)
+    readline(game.sock)
+end
+
 function send_command_queue(command_queue::Vector{String}) 
     print.(command_queue)
     print("\n")
+    flush(STDOUT)
+end
+
+function send_command_queue(command_queue::String)
+    println(command_queue)
+    flush(STDOUT)
 end
 
 dock(ship::Ship, planet::Planet) = "d $(ship.id) $(planet.id)"

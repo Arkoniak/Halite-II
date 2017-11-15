@@ -1,3 +1,6 @@
+logger = get_logger("bot-logger")
+set_level(logger, "debug")
+
 ############################################################################################
 # static entities
 ############################################################################################
@@ -74,6 +77,8 @@ struct GameMap
     players::Dict{Int, Player}
     planets::Dict{Int, Planet}
 end
+GameMap(id::Int, width::Int, height::Int, game_map_str::String) = GameMap(id, width, height, parse_turn!(split(game_map_str))...)
+
 get_player(game_map::GameMap, player_id::Int) = game_map.players[player_id]
 get_player(game_map::GameMap, entity::Entity) = get_player(game_map, entity.owner_id)
 get_me(game_map::GameMap) = get_player(game_map, game_map.id)
@@ -100,9 +105,17 @@ struct Game
     botname::String
     width::Int
     height::Int
+    sock::Base.PipeEndpoint
     initial_game_map::GameMap
 end
 function Game(botname::String)
-    map = parse_map!()
-    Game(map.id, "$botname-$(map.id)", map.width, map.height, map)
+    id = parse(Int, readline())
+    setup_logger(botname, id)
+    set_level(logger, "debug")
+    width, height = parse.(Int, split(readline()))
+    map = GameMap(id, width, height, parse_turn!()...)
+    sock = connect("2017")
+    println(sock, "$id $width $height")
+    flush(sock)
+    Game(id, "$botname-$(id)", width, height, sock, map)
 end

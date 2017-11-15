@@ -2,9 +2,7 @@
     parse_map!()
 Get id, width and height from readline, parse the rest using parse_turn!
 """
-function parse_map!()
-    id = parse(Int, readline())
-    width, height = parse.(Int, split(readline()))
+function parse_map(id, width, height)
     return GameMap(id, width, height, parse_turn!()...)
 end
 update_map(game::Game) = GameMap(game.id, game.width, game.height, parse_turn!()...)
